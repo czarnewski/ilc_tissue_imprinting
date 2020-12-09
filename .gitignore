@@ -1,3 +1,8 @@
+# Data and analysis nor Sauron script folders
+data
+analysis
+sauron
+
 # History files
 .Rhistory
 .Rapp.history
