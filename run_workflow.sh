@@ -71,16 +71,16 @@ script_path=$main/'sauron/scripts'
 #####################
 ### LOAD DATASETS ###
 #####################
-# Rscript $script_path/00_load_data.R \
-# --input_path $main/'data/RNAseq' \
-# --dataset_metadata_path $main/'data/GSE150050_metadata.csv' \
-# --species_use 'hsapiens' \
-# --estimate_molecules_from_read_count 'True' \
-# --mapping_threshold '2.5' \
-# --sum_to_gene_level 'True' \
-# --assay 'RNA' \
-# --output_path $main/'analysis/1_qc' \
-# 2>&1 | tee $main/log/'00_load_data_log.txt'
+Rscript $script_path/00_load_data.R \
+--input_path $main/'data/RNAseq' \
+--dataset_metadata_path $main/'data/GSE150050_metadata.csv' \
+--species_use 'hsapiens' \
+--estimate_molecules_from_read_count 'True' \
+--mapping_threshold '2.5' \
+--sum_to_gene_level 'True' \
+--assay 'RNA' \
+--output_path $main/'analysis/1_qc' \
+2>&1 | tee $main/log/'00_load_data_log.txt'
 
 
 
