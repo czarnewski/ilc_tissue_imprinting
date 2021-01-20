@@ -1,7 +1,8 @@
 # Data and analysis nor Sauron script folders
-data
-analysis
-sauron
+**/log
+**/data
+**/analysis
+**/sauron
 
 # History files
 .Rhistory
@@ -42,3 +43,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+.DS_Store

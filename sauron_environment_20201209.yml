@@ -1,4 +1,4 @@
-name: Sauron.v1
+name: ilc_tissue_imprinting
 channels:
  - conda-forge
  - bioconda

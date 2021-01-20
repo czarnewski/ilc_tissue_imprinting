@@ -3,12 +3,11 @@
 ##################################
 ### ACTIVATE CONDA ENVIRONMENT ###
 ##################################
+eval "$(conda shell.bash hook)"
 # conda activate base
 # conda install -c conda-forge mamba
-# mamba env create -sauron -f sauron_environment_20201209.yml
-# conda activate sauron
-
-
+# mamba env create -n ilc_tissue_imprinting -f sauron_environment_20201209.yml
+# conda activate ilc_tissue_imprinting
 
 
 
@@ -22,21 +21,37 @@ main=$(pwd)
 cd $main
 ! test -d analysis && $(mkdir analysis)
 ! test -d log && $(mkdir log)
-! test -d data && $(mkdir data)
 
 
 
-######################################################
-### DOWNLOAD DATA FROM GEO ANS SCRIPTS FROM GITHUB ###
-######################################################
-! test -d 'analysis' && $(git clone \
-https://github.com/NBISweden/sauron.git --branch v.0.1-beta)
+#################################
+### DOWNLOAD CODE FROM GITHUB ###
+#################################
+! test -d 'sauron' && {
+  $(git clone https://github.com/NBISweden/sauron.git --branch v.0.1-beta)
+}
 script_path=$main/'sauron/scripts'
 
-cd $main/'data'
-curl -O https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE150050&format=file&file=GSE150050%5Fmetadata%2Ecsv%2Egz
-curl -O https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE150050&format=file
-cd ..
+
+
+##############################
+### DOWNLOAD DATA FROM GEO ###
+##############################
+! test -d data && {
+  mkdir data
+  cd $main/'data'
+  #Download metadata file
+  cd data
+  curl -o GSE150050_metadata.csv.gz 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE150nnn/GSE150050/suppl/GSE150050%5Fmetadata%2Ecsv%2Egz'
+  gunzip GSE150050_metadata.csv.gz
+
+  #Download raw data from GEO
+  curl -o GSE150050_RAW.tar 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE150nnn/GSE150050/suppl/GSE150050%5FRAW%2Etar'
+  tar -xvf GSE150050_RAW.tar
+  for i in $(ls *.tar.gz); do tar -xzvf $i; done
+  cd ..
+}
+
 
 
 
@@ -44,8 +59,8 @@ cd ..
 ### LOAD DATASETS ###
 #####################
 Rscript $script_path/00_load_data.R \
---input_path $main/'data/SMARTseq2_RNA' \
---dataset_metadata_path $main/'data/metadata.csv' \
+--input_path $main/'data' \
+--dataset_metadata_path $main/'data/GSE150050_metadata.csv' \
 --species_use 'hsapiens' \
 --estimate_molecules_from_read_count 'True' \
 --mapping_threshold '2.5' \
@@ -219,4 +234,4 @@ Rscript $script_path/VDJ_analysis.R \
 
 
 
-# conda deactivate
+conda deactivate

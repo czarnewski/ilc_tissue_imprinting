@@ -4,4 +4,27 @@ Repository contacting the code related to the article "Tissue-specific transcrip
 
 The analysis done herein can be reproduced by installing `conda` and running the `run_workflow.sh` script. It will download the dataset from GEO (GSE150050), the scripts from Sauron.
 
-[More to information come here soon]
+
+
+1. Clone this repository
+```
+git clone https://github.com/czarnewski/ilc_tissue_imprinting.git
+```
+
+
+2. Create and activate the conda environment
+```
+cd ilc_tissue_imprinting
+
+conda activate base
+conda install -c conda-forge mamba
+
+mamba env create -n ilc_tissue_imprinting -f sauron_environment_20201209.yml
+conda activate ilc_tissue_imprinting
+```
+
+
+3. Run the analysis workflow
+```
+sh run_workflow.sh
+```
