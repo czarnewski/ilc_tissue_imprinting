@@ -20,16 +20,17 @@ var_to_plot='Dataset,Tissue,Plate,Donor,Celltype,Sex'
 var_to_regress='perc_mito,perc_rpl,perc_rps,perc_Chr_Y,perc_snRNA,Sex'
 main=$(pwd)
 cd $main
-! test -d 'analysis' && { mkdir analysis }
-! test -d 'log' && { mkdir log }
-! test -d 'data' && { mkdir data }
+! test -d analysis && $(mkdir analysis)
+! test -d log && $(mkdir log)
+! test -d data && $(mkdir data)
 
 
 
 ######################################################
 ### DOWNLOAD DATA FROM GEO ANS SCRIPTS FROM GITHUB ###
 ######################################################
-git clone 'https://github.com/NBISweden/sauron.git'
+! test -d 'analysis' && $(git clone \
+https://github.com/NBISweden/sauron.git --branch v.0.1-beta)
 script_path=$main/'sauron/scripts'
 
 cd $main/'data'
@@ -144,6 +145,8 @@ Rscript $script_path/cell_type_prediction.R \
 
 # #Clusters 12, 16 and 20 were associated to Fibroblasts and APCs and were removed
 # Hierachical Clustering was used because the total number of clusters is easy to find
+
+
 ####################################
 ### RUN DIMENSIONALITY REDUCTION ###
 ####################################
