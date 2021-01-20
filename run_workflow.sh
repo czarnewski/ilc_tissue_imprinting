@@ -38,17 +38,30 @@ script_path=$main/'sauron/scripts'
 ### DOWNLOAD DATA FROM GEO ###
 ##############################
 ! test -d data && {
-  mkdir data
-  cd $main/'data'
+  mkdir -p $main/'data/RNAseq'
+  mkdir -p $main/'data/VDJseq'
+
   #Download metadata file
-  cd data
+  cd $main/'data'
   curl -o GSE150050_metadata.csv.gz 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE150nnn/GSE150050/suppl/GSE150050%5Fmetadata%2Ecsv%2Egz'
   gunzip GSE150050_metadata.csv.gz
 
   #Download raw data from GEO
+  cd $main/'data/RNAseq'
   curl -o GSE150050_RAW.tar 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE150nnn/GSE150050/suppl/GSE150050%5FRAW%2Etar'
   tar -xvf GSE150050_RAW.tar
-  for i in $(ls *.tar.gz); do tar -xzvf $i; done
+
+  mv $main/'data/RNAseq'/*VDJ* $main/'data/VDJseq'/
+  for i in $(ls $main/'data/RNAseq'/*.tar.gz); do tar -xzvf $i; done
+
+  cd $main/'data/VDJseq'
+  for i in $(ls $main/'data/VDJseq'/*.tar.gz); do tar -xzvf $i; done
+
+  rm $main/'data/RNAseq'/*.gz
+  rm $main/'data/RNAseq'/*.tar
+  rm $main/'data/VDJseq'/*.gz
+  rm $main/'data/VDJseq'/*.tar
+
   cd ..
 }
 
@@ -58,16 +71,16 @@ script_path=$main/'sauron/scripts'
 #####################
 ### LOAD DATASETS ###
 #####################
-Rscript $script_path/00_load_data.R \
---input_path $main/'data' \
---dataset_metadata_path $main/'data/GSE150050_metadata.csv' \
---species_use 'hsapiens' \
---estimate_molecules_from_read_count 'True' \
---mapping_threshold '2.5' \
---sum_to_gene_level 'True' \
---assay 'RNA' \
---output_path $main/'analysis/1_qc' \
-2>&1 | tee $main/log/'00_load_data_log.txt'
+# Rscript $script_path/00_load_data.R \
+# --input_path $main/'data/RNAseq' \
+# --dataset_metadata_path $main/'data/GSE150050_metadata.csv' \
+# --species_use 'hsapiens' \
+# --estimate_molecules_from_read_count 'True' \
+# --mapping_threshold '2.5' \
+# --sum_to_gene_level 'True' \
+# --assay 'RNA' \
+# --output_path $main/'analysis/1_qc' \
+# 2>&1 | tee $main/log/'00_load_data_log.txt'
 
 
 
@@ -220,7 +233,7 @@ Rscript $script_path/04_diff_gene_expr.R \
 ########################
 Rscript $script_path/VDJ_analysis.R \
 --Seurat_object_path $main/'analysis/2_clustering_filt/seurat_object.rds' \
---VDJ_annotation_path $main/'data/SMARTseq2_VDJ_mixcr' \
+--VDJ_annotation_path $main/'data/VDJseq' \
 --columns_metadata 'Celltype' \
 --top_TCRs '10' \
 --paired_only 'false' \
